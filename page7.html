@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P7 | Attachment DC Follow-Up</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+const session = JSON.parse(localStorage.getItem("loggedInUser") || "null");
+if(!session) window.location.href="login.html";
+</script>
+
+<style>
+:root{
+  --primary:#2563eb; --primary-dark:#1e40af;
+  --bg:#f8fafc; --card:#ffffff; --border:#e5e7eb;
+  --text:#0f172a; --muted:#64748b;
+  --success:#10b981; --danger:#dc2626;
+  --radius:14px; --shadow:0 10px 25px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Inter,system-ui;
+  background:linear-gradient(180deg,#eef5ff,#f8fafc);
+  color:var(--text)
+}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+  width:270px;background:linear-gradient(180deg,var(--primary),var(--primary-dark));
+  color:#fff;padding:24px 18px;display:flex;flex-direction:column
+}
+.brand{display:flex;gap:12px;align-items:center;margin-bottom:30px}
+.logo{
+  width:44px;height:44px;border-radius:12px;
+  background:#fff;color:var(--primary);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800
+}
+.nav{flex:1}
+.nav-title{
+  margin:14px 10px 6px;
+  font-size:11px;font-weight:700;
+  opacity:.7;letter-spacing:.6px
+}
+.nav a{
+  display:flex;gap:12px;align-items:center;
+  padding:12px 14px;border-radius:10px;
+  text-decoration:none;color:#fff;
+  font-weight:600;opacity:.85;margin-bottom:4px
+}
+.nav a.active,.nav a:hover{
+  background:rgba(255,255,255,.2);opacity:1
+}
+.btn-sidebar{
+  width:100%;background:rgba(255,255,255,.1);
+  border:none;color:#ff8a8a;
+  padding:10px;border-radius:8px;
+  font-weight:600;cursor:pointer;
+  margin-top:10px;text-align:left
+}
+
+/* MAIN */
+.main{flex:1;padding:26px;overflow:auto}
+.page-header{margin-bottom:20px}
+.page-title{font-size:22px;font-weight:800}
+.page-sub{font-size:13px;color:var(--muted)}
+
+/* CONTROLS */
+.controls-card{
+  background:var(--card);padding:20px;border-radius:var(--radius);
+  box-shadow:var(--shadow);display:flex;gap:15px;
+  align-items:center;margin-bottom:25px;flex-wrap:wrap
+}
+.input-group{display:flex;gap:10px;flex:1;min-width:250px}
+input{
+  flex:1;padding:12px 16px;border:1px solid var(--border);
+  border-radius:10px;font-size:14px
+}
+.btn{
+  padding:12px 18px;border-radius:10px;border:none;
+  font-weight:700;cursor:pointer;display:inline-flex;
+  align-items:center;gap:8px
+}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:#fee2e2;color:var(--danger)}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--muted)}
+
+/* TABLE */
+.card{
+  background:var(--card);border-radius:var(--radius);
+  padding:20px;box-shadow:var(--shadow)
+}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{
+  background:#f1f5f9;padding:14px;font-size:13px;
+  color:var(--muted);text-align:left
+}
+tbody td{
+  padding:14px;border-top:1px solid var(--border);
+  font-size:14px
+}
+.badge{
+  padding:5px 10px;border-radius:20px;
+  font-size:11px;font-weight:700;text-transform:uppercase
+}
+.badge-active{background:#eff6ff;color:var(--primary)}
+.badge-done{background:#dcfce7;color:var(--success)}
+.row-done td{color:var(--muted);opacity:.8}
+.row-done b{text-decoration:line-through}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo">P7</div>
+    <div><b>Implant Governance</b></div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-title">COMPONENT DEPARTMENT</div>
+    <a href="index.html"><i class="fa fa-plus"></i> New Entry</a>
+    <a href="page2.html"><i class="fa fa-list-check"></i> Working Summary</a>
+    <a href="page3.html"><i class="fa fa-chart-line"></i> Analytics</a>
+    <a href="page4.html"><i class="fa fa-check-circle"></i> Completed</a>
+    <a href="page5.html"><i class="fa fa-triangle-exclamation"></i> Backlogs</a>
+    <a href="page6.html"><i class="fa fa-cubes"></i> WallDrop</a>
+
+    <div class="nav-title">ATTACHMENT DEPARTMENT</div>
+    <a href="page7.html" class="active"><i class="fa fa-paperclip"></i> Attachment DC</a>
+    <a href="page8.html"><i class="fa fa-cubes"></i> Attachment WallDrop</a>
+
+    <button class="btn-sidebar" onclick="clearDatabase()">
+      <i class="fa fa-trash-can"></i> Clear Database
+    </button>
+
+    <button onclick="logout()" style="background:none;border:none;color:#fff;margin-top:10px;font-weight:600;text-align:left">
+      <i class="fa fa-sign-out-alt"></i> Logout
+    </button>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <div class="page-title">Attachment DC Follow-Up</div>
+    <div class="page-sub">Track and manage DC attachments</div>
+  </div>
+
+  <div class="controls-card">
+    <div class="input-group">
+      <input id="jobInput" placeholder="Jobcard No" onkeypress="if(event.key==='Enter')addJob()">
+      <input id="boxInput" placeholder="Box No">
+      <button class="btn btn-primary" onclick="addJob()">
+        <i class="fa fa-plus"></i> Add
+      </button>
+    </div>
+
+    <div class="input-group">
+      <input id="searchInput" placeholder="Search Jobcard..." oninput="render()">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Jobcard</th>
+            <th>Box</th>
+            <th>Rack</th>
+            <th>Entry Time</th>
+            <th>Status</th>
+            <th style="text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+const DB="attachment_dc_db";
+const RACKS=["31A","32A","33A","34A","35A"];
+const CAPACITY=42;
+let records=JSON.parse(localStorage.getItem(DB)||"[]");
+
+const now=()=>{
+  const d=new Date();
+  return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1)
+    .toString().padStart(2,'0')}/${d.getFullYear()} ${d.getHours()
+    .toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+};
+
+function nextRack(){
+  for(const r of RACKS){
+    if(records.filter(x=>x.rack===r && x.status!=="Completed").length<CAPACITY)
+      return r;
+  }
+  return null;
+}
+
+function addJob(){
+  const job=jobInput.value.trim().toUpperCase();
+  if(!job) return alert("Enter Jobcard");
+  const rack=nextRack();
+  if(!rack) return alert("All racks full");
+  records.unshift({
+    id:Date.now()+"",
+    jobcard:job,
+    box:boxInput.value.trim(),
+    rack,
+    timestamp:now(),
+    status:"Active"
+  });
+  jobInput.value=boxInput.value="";
+  save();
+}
+
+function toggle(id){
+  const r=records.find(x=>x.id===id);
+  if(!r) return;
+  if(r.status==="Completed"){
+    if(confirm("Revert to Active?")) r.status="Active";
+  }else{
+    if(confirm("Mark Completed?")) r.status="Completed";
+  }
+  save();
+}
+
+function removeRec(id){
+  if(confirm("Delete this record?")){
+    records=records.filter(x=>x.id!==id);
+    save();
+  }
+}
+
+function render(){
+  const q=searchInput.value.toUpperCase();
+  const rows=records.filter(r=>r.jobcard.includes(q));
+  tableBody.innerHTML=rows.length?rows.map(r=>`
+    <tr class="${r.status==="Completed"?"row-done":""}">
+      <td><b>${r.jobcard}</b></td>
+      <td>${r.box||"-"}</td>
+      <td><b>${r.rack}</b></td>
+      <td>${r.timestamp}</td>
+      <td><span class="badge ${r.status==="Completed"?"badge-done":"badge-active"}">${r.status}</span></td>
+      <td style="text-align:right">
+        <button class="btn ${r.status==="Completed"?"btn-ghost":"btn-success"}"
+          onclick="toggle('${r.id}')">
+          <i class="fa ${r.status==="Completed"?"fa-rotate-left":"fa-check"}"></i>
+        </button>
+        <button class="btn btn-danger" onclick="removeRec('${r.id}')">
+          <i class="fa fa-trash"></i>
+        </button>
+      </td>
+    </tr>`).join(""):
+    `<tr><td colspan="6" style="text-align:center;padding:30px;color:#ccc">No records</td></tr>`;
+}
+
+function save(){
+  localStorage.setItem(DB,JSON.stringify(records));
+  render();
+}
+
+function clearDatabase(){
+  if(confirm("⚠️ Clear ALL Attachment DC records?")){
+    localStorage.removeItem(DB);
+    records=[];
+    render();
+  }
+}
+
+function logout(){
+  localStorage.removeItem("loggedInUser");
+  window.location.href="login.html";
+}
+
+render();
+</script>
+</body>
+</html>

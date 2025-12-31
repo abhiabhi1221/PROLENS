@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P3 | Analytics</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+const session = JSON.parse(localStorage.getItem("loggedInUser") || "null");
+if (!session) window.location.href = "login.html";
+</script>
+
+<style>
+:root{
+  --primary:#2563eb;
+  --primary-dark:#1e40af;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#0f172a;
+  --muted:#64748b;
+  --danger:#dc2626;
+  --radius:14px;
+  --shadow:0 10px 25px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui;
+  background:linear-gradient(180deg,#eef5ff,#f8fafc);
+  color:var(--text);
+}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+  width:270px;
+  background:linear-gradient(180deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  padding:24px 18px;
+  display:flex;
+  flex-direction:column;
+}
+.brand{display:flex;gap:12px;align-items:center;margin-bottom:30px}
+.logo{
+  width:44px;height:44px;border-radius:12px;
+  background:#fff;color:var(--primary);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800
+}
+.nav{flex:1}
+.nav a{
+  display:flex;gap:12px;align-items:center;
+  padding:12px 14px;border-radius:10px;
+  text-decoration:none;color:#fff;
+  font-weight:600;opacity:.85;
+  margin-bottom:4px;transition:.2s
+}
+.nav a.active,.nav a:hover{
+  background:rgba(255,255,255,.2);opacity:1
+}
+
+/* MAIN */
+.main{flex:1;padding:26px;overflow:auto}
+.page-header{margin-bottom:20px}
+.page-title{font-size:22px;font-weight:800}
+
+/* KPI */
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:22px
+}
+.kpi{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow)
+}
+.kpi h4{
+  margin:0;font-size:13px;
+  color:var(--muted);
+  text-transform:uppercase
+}
+.kpi .val{
+  font-size:28px;
+  font-weight:800;
+  margin-top:6px;
+  color:var(--primary)
+}
+
+/* ANALYTICS GRID */
+.analytics-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px
+}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:24px;
+  box-shadow:var(--shadow)
+}
+.card h3{
+  margin:0 0 14px;
+  font-size:15px;
+  font-weight:700;
+  color:var(--muted)
+}
+.chart-wrap{
+  position:relative;
+  height:300px
+}
+.full{grid-column:1/3}
+
+@media(max-width:900px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .analytics-grid{grid-template-columns:1fr}
+  .full{grid-column:auto}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo">P3</div>
+    <div><div style="font-weight:700">Implant Operational Governance</div></div>
+  </div>
+
+  <nav class="nav">
+    <div style="margin:14px 10px 6px;font-size:11px;font-weight:700;opacity:.7">COMPONENT DEPARTMENT</div>
+    <a href="index.html"><i class="fa fa-plus"></i> New Entry</a>
+    <a href="page2.html"><i class="fa fa-list-check"></i> Working Summary</a>
+    <a href="page3.html" class="active"><i class="fa fa-chart-line"></i> Analytics</a>
+    <a href="page4.html"><i class="fa fa-check-circle"></i> Completed</a>
+    <a href="page5.html"><i class="fa fa-triangle-exclamation"></i> Backlogs</a>
+    <a href="page6.html"><i class="fa fa-cubes"></i> WallDrop</a>
+
+    <div style="margin:18px 10px 6px;font-size:11px;font-weight:700;opacity:.7">ATTACHMENT DEPARTMENT</div>
+    <a href="page7.html"><i class="fa fa-paperclip"></i> Attachment DC</a>
+    <a href="page8.html"><i class="fa fa-cubes"></i> Attachment WallDrop</a>
+
+    <!-- CLEAR DATABASE -->
+    <button onclick="clearDatabase()"
+      style="background:rgba(255,255,255,0.1);
+             border:none;
+             color:#ff8a8a;
+             width:100%;
+             padding:10px;
+             border-radius:8px;
+             font-weight:600;
+             cursor:pointer;
+             margin-top:20px;
+             text-align:left">
+      <i class="fa fa-trash-can"></i> Clear Database
+    </button>
+
+    <button onclick="logout()"
+      style="background:none;border:none;color:#fff;
+             width:100%;font-weight:600;
+             cursor:pointer;text-align:left;
+             padding:12px 14px">
+      <i class="fa fa-sign-out-alt"></i> Logout
+    </button>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<div class="page-header">
+  <div class="page-title">Performance Analytics</div>
+</div>
+
+<!-- KPI -->
+<div class="kpis">
+  <div class="kpi"><h4>Total Active</h4><div class="val" id="kTotal">0</div></div>
+  <div class="kpi"><h4>Due Today</h4><div class="val" id="kToday">0</div></div>
+  <div class="kpi"><h4>Backlogs</h4><div class="val" id="kBacklog">0</div></div>
+  <div class="kpi"><h4>Postponed</h4><div class="val" id="kPostponed">0</div></div>
+</div>
+
+<!-- CHARTS -->
+<div class="analytics-grid">
+  <div class="card">
+    <h3>Component Type Distribution</h3>
+    <div class="chart-wrap"><canvas id="typeChart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <h3>Status Distribution</h3>
+    <div class="chart-wrap"><canvas id="statusChart"></canvas></div>
+  </div>
+
+  <div class="card full">
+    <h3>Postpone Intensity</h3>
+    <div class="chart-wrap"><canvas id="postponeChart"></canvas></div>
+  </div>
+
+  <div class="card full">
+    <h3>Backlog Aging</h3>
+    <div class="chart-wrap"><canvas id="delayChart"></canvas></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const DB = JSON.parse(localStorage.getItem("furecordsv3") || "[]");
+const COLORS = ['#2563eb','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
+
+const parseDate = d=>{
+  if(!d)return null;
+  const p=d.split(" ")[0].split("/");
+  return new Date(p[2],p[1]-1,p[0]);
+};
+
+const today=new Date();today.setHours(0,0,0,0);
+
+let total=0,todayCnt=0,backlog=0,postponed=0;
+DB.forEach(r=>{
+  if(r.status==="Completed")return;
+  total++;
+  const d=parseDate(r.todayFollow);
+  if(r.status==="Postponed")postponed++;
+  if(d){
+    d.setHours(0,0,0,0);
+    if(d.getTime()===today.getTime())todayCnt++;
+    if(d<today)backlog++;
+  }
+});
+
+kTotal.innerText=total;
+kToday.innerText=todayCnt;
+kBacklog.innerText=backlog;
+kPostponed.innerText=postponed;
+
+/* TYPE */
+const typeMap={};
+DB.forEach(r=>{
+  if(r.status!=="Completed")
+    typeMap[r.type]=(typeMap[r.type]||0)+1;
+});
+new Chart(typeChart,{
+  type:'pie',
+  data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:COLORS}]},
+  options:{maintainAspectRatio:false}
+});
+
+/* STATUS */
+new Chart(statusChart,{
+  type:'doughnut',
+  data:{
+    labels:['Active','Postponed','Backlog'],
+    datasets:[{data:[total-postponed-backlog,postponed,backlog],
+    backgroundColor:['#10b981','#3b82f6','#ef4444']}]
+  },
+  options:{maintainAspectRatio:false,cutout:'60%'}
+});
+
+/* POSTPONE */
+const stage={0:0,1:0,2:0,3:0,4:0,5:0,6:0};
+DB.forEach(r=>{
+  const s=r.postponeCount||0;
+  stage[s>=6?6:s]++;
+});
+new Chart(postponeChart,{
+  type:'bar',
+  data:{labels:['0','1','2','3','4','5','6+'],
+  datasets:[{data:Object.values(stage),backgroundColor:'#2563eb'}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{display:false}}}
+});
+
+/* DELAY */
+const delay={'>1 Day':0,'>7 Days':0,'>14 Days':0,'>30 Days':0};
+DB.forEach(r=>{
+  if(r.status==="Completed")return;
+  const d=parseDate(r.todayFollow);
+  if(!d)return;
+  const diff=(today-d)/86400000;
+  if(diff>=1)delay['>1 Day']++;
+  if(diff>=7)delay['>7 Days']++;
+  if(diff>=14)delay['>14 Days']++;
+  if(diff>=30)delay['>30 Days']++;
+});
+new Chart(delayChart,{
+  type:'bar',
+  data:{labels:Object.keys(delay),
+  datasets:[{data:Object.values(delay),
+  backgroundColor:['#fde047','#fb923c','#f87171','#dc2626']}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{display:false}}}
+});
+
+/* CLEAR DATABASE */
+function clearDatabase(){
+  if(confirm("⚠️ WARNING:\nThis will permanently delete ALL records.\nThis action cannot be undone.\n\nProceed?")){
+    localStorage.removeItem("furecordsv3");
+    alert("Database cleared successfully.");
+    location.reload();
+  }
+}
+
+function logout(){
+  localStorage.removeItem("loggedInUser");
+  window.location.href="login.html";
+}
+</script>
+</body>
+</html>

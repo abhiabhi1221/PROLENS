@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P4 | Completed</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<script>
+const session = JSON.parse(localStorage.getItem("loggedInUser") || "null");
+if(!session) window.location.href="login.html";
+</script>
+
+<style>
+:root{
+  --primary:#2563eb;--primary-dark:#1e40af;
+  --bg:#f8fafc;--card:#ffffff;--border:#e5e7eb;
+  --text:#0f172a;--muted:#64748b;
+  --success:#10b981;--danger:#dc2626;
+  --radius:14px;--shadow:0 10px 25px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Inter,system-ui;
+  background:linear-gradient(180deg,#eef5ff,#f8fafc);
+  color:var(--text)
+}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+  width:270px;
+  background:linear-gradient(180deg,var(--primary),var(--primary-dark));
+  color:#fff;padding:24px 18px;
+  display:flex;flex-direction:column
+}
+.brand{display:flex;gap:12px;align-items:center;margin-bottom:30px}
+.logo{
+  width:44px;height:44px;border-radius:12px;
+  background:#fff;color:var(--primary);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800
+}
+.nav{flex:1}
+.nav-title{
+  margin:14px 10px 6px;
+  font-size:11px;font-weight:700;
+  opacity:.7;letter-spacing:.6px
+}
+.nav a{
+  display:flex;gap:12px;align-items:center;
+  padding:12px 14px;border-radius:10px;
+  text-decoration:none;color:#fff;
+  font-weight:600;opacity:.85;
+  margin-bottom:4px
+}
+.nav a.active,.nav a:hover{
+  background:rgba(255,255,255,.2);opacity:1
+}
+.btn-sidebar{
+  width:100%;background:rgba(255,255,255,.1);
+  border:none;color:#ff8a8a;
+  padding:10px;border-radius:8px;
+  font-weight:600;cursor:pointer;
+  margin-top:10px;text-align:left
+}
+
+/* MAIN */
+.main{flex:1;padding:26px;overflow:auto}
+.page-header{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-bottom:20px
+}
+.page-title{font-size:22px;font-weight:800}
+
+/* KPI */
+.kpis{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:16px;margin-bottom:22px
+}
+.kpi{
+  background:var(--card);border-radius:var(--radius);
+  padding:18px;box-shadow:var(--shadow)
+}
+.kpi h4{
+  margin:0;font-size:12px;color:var(--muted);
+  text-transform:uppercase
+}
+.kpi .val{
+  font-size:26px;font-weight:800;
+  margin-top:6px;color:var(--success)
+}
+
+/* CARD */
+.card{
+  background:var(--card);border-radius:var(--radius);
+  padding:22px;box-shadow:var(--shadow)
+}
+.controls{
+  display:flex;gap:12px;
+  margin-bottom:15px;flex-wrap:wrap
+}
+.search{flex:1;position:relative}
+.search i{
+  position:absolute;left:12px;
+  top:50%;transform:translateY(-50%);
+  color:var(--muted)
+}
+.search input{
+  width:100%;padding:11px 12px 11px 38px;
+  border-radius:10px;border:1px solid var(--border)
+}
+.filter-btn{
+  background:#fff;border:1px solid var(--border);
+  padding:8px 14px;border-radius:8px;
+  font-weight:600;cursor:pointer
+}
+.filter-btn.active{
+  background:#eff6ff;color:var(--primary);
+  border-color:#bfdbfe
+}
+
+/* TABLE */
+.table-wrap{
+  border:1px solid var(--border);
+  border-radius:12px;overflow:auto
+}
+table{width:100%;border-collapse:collapse}
+th,td{
+  padding:14px;border-bottom:1px solid var(--border);
+  font-size:14px;white-space:nowrap
+}
+th{
+  background:#f1f5f9;font-size:12px;
+  color:var(--muted);text-transform:uppercase
+}
+.badge{
+  background:#dcfce7;color:#166534;
+  padding:4px 8px;border-radius:6px;
+  font-size:11px;font-weight:700
+}
+.btn{
+  padding:6px 10px;border-radius:8px;
+  border:none;font-size:11px;
+  font-weight:700;cursor:pointer
+}
+.btn-restore{background:#dbeafe;color:#1e40af}
+.btn-del{background:#fee2e2;color:#dc2626}
+
+@media(max-width:1100px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo">P4</div>
+    <div><div style="font-weight:700">Implant Governance</div></div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-title">COMPONENT DEPARTMENT</div>
+    <a href="index.html"><i class="fa fa-plus"></i> New Entry</a>
+    <a href="page2.html"><i class="fa fa-list-check"></i> Working Summary</a>
+    <a href="page3.html"><i class="fa fa-chart-line"></i> Analytics</a>
+    <a href="page4.html" class="active"><i class="fa fa-check-circle"></i> Completed</a>
+    <a href="page5.html"><i class="fa fa-triangle-exclamation"></i> Backlogs</a>
+    <a href="page6.html"><i class="fa fa-cubes"></i> WallDrop</a>
+
+    <div class="nav-title">ATTACHMENT DEPARTMENT</div>
+    <a href="page7.html"><i class="fa fa-paperclip"></i> Attachment DC</a>
+    <a href="page8.html"><i class="fa fa-cubes"></i> Attachment WallDrop</a>
+
+    <button class="btn-sidebar" onclick="clearDatabase()">
+      <i class="fa fa-trash-can"></i> Clear Database
+    </button>
+
+    <button onclick="logout()" style="background:none;border:none;color:#fff;width:100%;font-weight:600;text-align:left;padding:10px">
+      <i class="fa fa-sign-out-alt"></i> Logout
+    </button>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<div class="page-header">
+  <div class="page-title">Completed Follow-Ups</div>
+  <button onclick="exportExcel()" class="filter-btn">
+    <i class="fa fa-file-excel"></i> Export
+  </button>
+</div>
+
+<!-- KPI -->
+<div class="kpis">
+  <div class="kpi"><h4>Total Completed</h4><div class="val" id="kTotal">0</div></div>
+  <div class="kpi"><h4>Today</h4><div class="val" id="kToday">0</div></div>
+  <div class="kpi"><h4>Last 7 Days</h4><div class="val" id="kWeek">0</div></div>
+  <div class="kpi"><h4>Last 14 Days</h4><div class="val" id="kTwoWeek">0</div></div>
+  <div class="kpi"><h4>This Month</h4><div class="val" id="kMonth">0</div></div>
+</div>
+
+<div class="card">
+  <div class="controls">
+    <div class="search">
+      <i class="fa fa-search"></i>
+      <input id="search" placeholder="Search Jobcard / SO / Type..." oninput="render()">
+    </div>
+    <button class="filter-btn active" onclick="setFilter('ALL')">All</button>
+    <button class="filter-btn" onclick="setFilter('7')">7 Days</button>
+    <button class="filter-btn" onclick="setFilter('14')">2 Weeks</button>
+    <button class="filter-btn" onclick="setFilter('30')">30 Days</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Jobcard</th>
+          <th>SO Number</th>
+          <th>Type</th>
+          <th>Due Date</th>
+          <th>Completed On</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const DB="furecordsv3";
+let data=JSON.parse(localStorage.getItem(DB)||"[]");
+let filter="ALL";
+
+const parse=d=>{
+  if(!d)return null;
+  const p=d.split(" ")[0].split("/");
+  return new Date(p[2],p[1]-1,p[0]);
+};
+
+function setFilter(f){
+  filter=f;
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
+  render();
+}
+
+function render(){
+  const q=document.getElementById("search").value.toLowerCase();
+  const tbody=document.getElementById("tbody");
+  const now=new Date();now.setHours(0,0,0,0);
+
+  const completed=data.filter(r=>r.status==="Completed");
+  tbody.innerHTML="";
+
+  let today=0,week=0,two=0,month=0;
+
+  completed.forEach(r=>{
+    const d=parse(r.completedAt);
+    const diff=(now-d)/86400000;
+    if(diff===0) today++;
+    if(diff<=7) week++;
+    if(diff<=14) two++;
+    if(d.getMonth()===now.getMonth()) month++;
+  });
+
+  kTotal.innerText=completed.length;
+  kToday.innerText=today;
+  kWeek.innerText=week;
+  kTwoWeek.innerText=two;
+  kMonth.innerText=month;
+
+  completed.filter(r=>{
+    const d=parse(r.completedAt);
+    const diff=(now-d)/86400000;
+    if(filter==="7" && diff>7) return false;
+    if(filter==="14" && diff>14) return false;
+    if(filter==="30" && diff>30) return false;
+    return true;
+  }).filter(r=>
+    r.jobcard.toLowerCase().includes(q) ||
+    (r.soNumber||"").toLowerCase().includes(q) ||
+    r.type.toLowerCase().includes(q)
+  ).forEach(r=>{
+    tbody.innerHTML+=`
+      <tr>
+        <td><b>${r.jobcard}</b></td>
+        <td style="color:var(--primary);font-weight:700">${r.soNumber||"-"}</td>
+        <td>${r.type}</td>
+        <td>${r.todayFollow}</td>
+        <td style="color:var(--success);font-weight:700">${r.completedAt}</td>
+        <td><span class="badge">COMPLETED</span></td>
+        <td>
+          <button class="btn btn-restore" onclick="restore('${r.id}')">Restore</button>
+          <button class="btn btn-del" onclick="removeRec('${r.id}')">Delete</button>
+        </td>
+      </tr>`;
+  });
+}
+
+function restore(id){
+  const r=data.find(x=>x.id===id);
+  r.status="Active";
+  delete r.completedAt;
+  save();
+}
+function removeRec(id){
+  if(!confirm("Delete permanently?"))return;
+  data=data.filter(x=>x.id!==id);
+  save();
+}
+function clearDatabase(){
+  if(!confirm("Clear ALL data?"))return;
+  localStorage.removeItem(DB);
+  location.reload();
+}
+function exportExcel(){
+  const ws=XLSX.utils.json_to_sheet(data.filter(r=>r.status==="Completed"));
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Completed");
+  XLSX.writeFile(wb,"Completed.xlsx");
+}
+function save(){
+  localStorage.setItem(DB,JSON.stringify(data));
+  render();
+}
+function logout(){
+  localStorage.removeItem("loggedInUser");
+  window.location.href="login.html";
+}
+
+render();
+</script>
+</body>
+</html>
